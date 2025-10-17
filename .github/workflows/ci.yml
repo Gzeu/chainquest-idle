@@ -1,0 +1,51 @@
+name: CI
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Install system deps
+        run: sudo apt-get update && sudo apt-get install -y libclang-dev libglfw3-dev libasound2-dev libx11-dev libxi-dev libxxf86vm-dev libxcursor-dev libxrandr-dev
+      - name: Build
+        run: cargo build --release --verbose
+      - name: Test
+        run: cargo test --verbose
+      - name: Security audit
+        run: |
+          cargo install cargo-audit || true
+          cargo audit || true
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries
+          path: target/release/
+      - name: Vercel Deploy
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          npm i -g vercel@latest
+          vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} || true
+      - name: Render Deploy
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          curl -fsSL https://cli.render.com/install | bash
+          ~/.render-cli/bin/render services list || true
+          ~/.render-cli/bin/render deploy --service ${{ secrets.RENDER_SERVICE_ID }} --api-key ${{ secrets.RENDER_API_KEY }} || true
+      - name: MultiversX SC Deploy (testnet)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          MX_WALLET_PEM: ${{ secrets.MX_WALLET_PEM }}
+          MX_GATEWAY: https://testnet-gateway.multiversx.com
+        run: |
+          echo "$MX_WALLET_PEM" > wallet.pem
+          bash -c "echo TODO: add SC build & deploy scripts"
