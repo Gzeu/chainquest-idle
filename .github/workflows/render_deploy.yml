@@ -1,0 +1,19 @@
+name: Render Deploy ENet
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Render CLI
+        run: |
+          curl -fsSL https://cli.render.com/install | bash
+      - name: Deploy ENet Service
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+        run: |
+          ~/.render-cli/bin/render services list || true
+          ~/.render-cli/bin/render deploy --service $RENDER_SERVICE_ID --api-key $RENDER_API_KEY
