@@ -1,0 +1,16 @@
+[package]
+name = "chainquest-sc"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+multiversx-sc = "0.47"
+multiversx-sc-derive = "0.47"
+multiversx-sc-modules = "0.47"
+
+[dev-dependencies]
+multiversx-sc-scenario = "0.47"
