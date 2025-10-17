@@ -8,6 +8,7 @@ use crate::systems_idle::update_idle_progress;
 use crate::systems_setup::{setup_camera, setup_ui, setup_map};
 use crate::multiplayer::client::{net_setup, net_connect, net_service, net_ping};
 use crate::ui::hud::{ui_setup, ui_update};
+use crate::config::startup::apply_env;
 
 pub struct GamePlugin;
 impl Plugin for GamePlugin {
@@ -15,7 +16,7 @@ impl Plugin for GamePlugin {
         app
             .insert_resource(GameState::default())
             .insert_resource(DatabaseConnection::new())
-            .add_systems(Startup, (setup_camera, setup_ui, setup_map, net_setup, ui_setup))
+            .add_systems(Startup, (apply_env, setup_camera, setup_ui, setup_map, net_setup, ui_setup))
             .add_systems(Update, (
                 update_idle_progress,
                 ui_update,
