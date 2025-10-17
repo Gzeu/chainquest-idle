@@ -1,0 +1,20 @@
+name: Add assets (fonts)
+on:
+  workflow_dispatch:
+
+jobs:
+  add-fonts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download FiraSans-Bold.ttf
+        run: |
+          mkdir -p assets/fonts
+          curl -L -o assets/fonts/FiraSans-Bold.ttf https://github.com/mozilla/Fira/raw/master/ttf/FiraSans-Bold.ttf || true
+      - name: Commit fonts
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add assets/fonts/FiraSans-Bold.ttf || true
+          git commit -m "Add FiraSans-Bold.ttf font asset" || echo "No changes"
+          git push || true
