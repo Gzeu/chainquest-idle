@@ -1,0 +1,33 @@
+name: Frontend CI
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'frontend/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'frontend/**'
+
+jobs:
+  build-and-deploy-vercel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install deps
+        working-directory: frontend
+        run: npm ci || npm i
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+      - name: Vercel Deploy (prod)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          npm i -g vercel@latest
+          vercel pull --yes --cwd frontend --token "$VERCEL_TOKEN" || true
+          vercel deploy --prod --cwd frontend --token "$VERCEL_TOKEN" || true

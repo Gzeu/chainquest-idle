@@ -1,0 +1,28 @@
+name: SC Build & Deploy (testnet)
+on:
+  workflow_dispatch:
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install MultiversX tools
+        run: |
+          sudo apt-get update && sudo apt-get install -y python3 python3-pip
+          pip3 install multiversx-sdk-cli --upgrade
+      - name: Prepare wallet
+        env:
+          MX_WALLET_PEM: ${{ secrets.MX_WALLET_PEM }}
+        run: |
+          echo "$MX_WALLET_PEM" > wallet.pem
+          test -s wallet.pem
+      - name: Build SC (stub)
+        working-directory: sc
+        run: |
+          echo "Stub build: add real wasm build scripts here (mxpy/sc-meta)"
+      - name: Deploy SC (stub)
+        env:
+          MX_GATEWAY: https://testnet-gateway.multiversx.com
+        run: |
+          echo "Stub deploy: replace with mxpy contract deploy --bytecode out/contract.wasm --pem wallet.pem --recall-nonce --gas-limit 60000000 --proxy $MX_GATEWAY --chain T"
