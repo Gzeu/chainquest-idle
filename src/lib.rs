@@ -1,53 +1,54 @@
-//! ChainQuest Idle - RPG blockchain idle game
-//! 
-//! Features:
-//! - Idle RPG mechanics with Bevy ECS
-//! - Multiplayer co-op (ENet)
-//! - AI-generated maps and quests (torch-rs) 
-//! - MultiversX SFT integration
-//! - SQLite local state management
-
-pub mod components;
-pub mod systems;
-pub mod resources;
-pub mod ai;
-pub mod blockchain;
-pub mod multiplayer;
-pub mod utils;
-
 use bevy::prelude::*;
-use components::*;
-use systems::*;
-use resources::*;
+use crate::components::*;
+use crate::resources::*;
+use crate::systems_idle::update_idle_progress;
+use crate::systems_setup::{setup_camera, setup_ui, setup_map};
 
-/// Main game plugin that sets up all systems
-pub struct GamePlugin;
-
-impl Plugin for GamePlugin {
-    fn build(&self, app: &mut App) {
-        app
-            // Add resources
-            .insert_resource(GameState::default())
-            .insert_resource(DatabaseConnection::new())
-            
-            // Add startup systems
-            .add_systems(Startup, (
-                setup_camera,
-                setup_ui,
-                load_saved_progress,
-            ))
-            
-            // Add update systems
-            .add_systems(Update, (
-                update_idle_progress,
-                handle_input,
-                render_ui,
-                save_progress,
-            ));
+/// Render UI elements (simple gizmos)
+pub fn render_ui(
+    mut gizmos: Gizmos,
+    query: Query<&IdleProgress, With<Player>>,
+) {
+    if let Ok(progress) = query.get_single() {
+        let resource_bar_length = (progress.resources / 100.0).min(200.0);
+        gizmos.line_2d(
+            Vec2::new(-300.0, 300.0),
+            Vec2::new(-300.0 + resource_bar_length, 300.0),
+            Color::GREEN,
+        );
+        for i in 0..progress.level {
+            gizmos.circle_2d(
+                Vec2::new(-280.0 + (i as f32 * 20.0), 250.0),
+                8.0,
+                Color::YELLOW,
+            );
+        }
     }
 }
 
-/// Initialize the complete game
+pub fn handle_input(
+    mut query: Query<&mut IdleProgress, With<Player>>,
+    keyboard: Res<ButtonInput<KeyCode>>,
+) {
+    if keyboard.just_pressed(KeyCode::Space) {
+        for mut progress in query.iter_mut() {
+            progress.resources += 10.0 * (progress.level as f32);
+            info!("Manual resource collection! Total: {}", progress.resources);
+        }
+    }
+}
+
+pub struct GamePlugin;
+impl Plugin for GamePlugin {
+    fn build(&self, app: &mut App) {
+        app
+            .insert_resource(GameState::default())
+            .insert_resource(DatabaseConnection::new())
+            .add_systems(Startup, (setup_camera, setup_ui, setup_map))
+            .add_systems(Update, (update_idle_progress, handle_input, render_ui));
+    }
+}
+
 pub fn run_game() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
