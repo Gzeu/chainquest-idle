@@ -1,0 +1,12 @@
+target/
+.DS_Store
+*.pem
+chainquest.db
+/target/
+/.idea/
+/.vscode/
+.env
+.mx*
+/node_modules/
+.vercel/
+render.yaml
