@@ -25,6 +25,20 @@
 - **CI/CD Pipeline**: GitHub Actions pentru build, test, deploy
 - **Multi-platform Deploy**: Vercel (frontend), Render (server), WASM (browser)
 
+## 🧭 Frontend Next.js
+
+- **Structură**: `frontend/app` cu rutele `/wallet`, `/wasm`, `/status`[1]
+- **Wallet**: Integrare `@multiversx/sdk-dapp` (testnet) cu buton de login pe `/wallet`[1]
+- **WASM**: Placeholder pe `/wasm` cu canvas; urmează integrarea Bevy WebAssembly[1]
+- **Status/Deploy**: Ghid în `/status` pentru Vercel/Render și comenzi locale[1]
+- **Comenzi**:
+  ```bash
+  cd frontend
+  npm install
+  npm run dev
+  ```
+- **Vercel env**: setează `NEXT_PUBLIC_WC_PROJECT_ID` (WalletConnect V2 Project ID) înainte de deploy.
+
 ## 🎯 Controls
 
 - **SPACE**: Collect resources manually
@@ -74,16 +88,16 @@ CQ_PORT=8080
 
 ### Vercel (Frontend)
 ```bash
-# Next.js app in /frontend
-# WASM integration for browser client
-# xPortal wallet connection
+# Next.js app în /frontend
+# WASM integration pentru browser client
+# xPortal wallet connection (NEXT_PUBLIC_WC_PROJECT_ID necesar)
 ```
 
 ### MultiversX Testnet
 ```bash
-# Smart contracts in /sc
-# SFT minting and staking
-# Configure MX_WALLET_PEM secret
+# Smart contracts în /sc
+# SFT minting și staking
+# Configurează secretul MX_WALLET_PEM
 ```
 
 ## 🏗️ Architecture
@@ -91,13 +105,13 @@ CQ_PORT=8080
 ### Core Systems
 ```
 src/
-├── quest_system.rs      # Dynamic quest generation & completion
-├── ai/map_generator.rs  # AI-powered map generation (torch-rs)
-├── security/mod.rs      # Anti-cheat & input validation
-├── multiplayer/network.rs # ENet with rate limiting & compression
-├── components.rs        # ECS components (Player, Quest, SFT, etc.)
-├── systems_idle.rs      # Idle progression mechanics
-└── game_plugin.rs       # Main Bevy plugin integration
+├── quest_system.rs         # Dynamic quest generation & completion
+├── ai/map_generator.rs     # AI-powered map generation (torch-rs)
+├── security/mod.rs         # Anti-cheat & input validation
+├── multiplayer/network.rs  # ENet with rate limiting & compression
+├── components.rs           # ECS components (Player, Quest, SFT, etc.)
+├── systems_idle.rs         # Idle progression mechanics
+└── game_plugin.rs          # Main Bevy plugin integration
 ```
 
 ### Dependencies
@@ -107,6 +121,7 @@ src/
 - **MultiversX SDK**: Blockchain integration
 - **flate2**: Network packet compression
 - **parking_lot**: Thread-safe collections
+- **Next.js 14** + **@multiversx/sdk-dapp** + **zustand** (frontend)
 
 ## 📊 Development Status
 
@@ -120,11 +135,12 @@ src/
 - [x] Security & anti-cheat
 - [x] Enhanced networking
 - [x] Multiplayer foundation
+- [x] Frontend Next.js scaffolding cu wallet/wasm/status
 
 ### 🔄 În Progres
 - [ ] Smart contract deployment
-- [ ] Frontend Next.js integration
-- [ ] WASM optimization
+- [ ] WASM Bevy integration completă în /wasm
+- [ ] Frontend inventory SFT (după SC deploy)
 - [ ] Production testing
 
 ### 📋 Următoarele Priorități
