@@ -5,7 +5,7 @@ pub mod quest_system;
 pub mod security;
 pub mod resources;
 pub mod ai { pub mod mod_stub; pub mod integration; pub mod startup; pub mod map_generator; }
-pub mod multiplayer { pub mod client; }
+pub mod multiplayer { pub mod client; pub mod network; }
 pub mod ui { pub mod hud; }
 pub mod game_plugin;
 pub mod app;
