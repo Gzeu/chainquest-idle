@@ -15,3 +15,9 @@ pub mod mod_stub {
         grid
     }
 }
+
+pub mod map_generator;
+pub mod integration;
+pub mod startup;
+
+pub use map_generator::*;
